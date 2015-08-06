@@ -115,6 +115,62 @@
 	<div class="target" id="right-pane-traget"></div>
 
 	<div class="nomobile" id="update">Fish tastes good</div>
+
+	<div id="background-image"></div>
+	<div id="settings-modal">
+		<a href="javascript:void(0)">
+			<div id="close-settings-modal" class="mega-octicon octicon-x"></div>
+		</a>
+		<table id="settings-table">
+			<tbody>
+			<tr>
+				<td id="background-lbl" class="col1">Background Image</td>
+				<td id="background-select"><button id="custom-background">Choose...</button><br><span id="ideal-image-size"><strong>Best size (for current window):</strong> yes</span></td>
+			</tr>
+			<tr>
+				<td id="background-tile" class="col1">Tile background?</td>
+				<td id="background-tile-cb"><input id="tile-toggle" type="checkbox"></td>
+			</tr>
+			<tr>
+				<td id="background-pos-vert" class="col1">Background position (vertical)</td>
+				<td id="background-pos-vert-opt">
+					<select id="bg-pos-vert-combobox">
+						<option value="top">Top</option>
+						<option selected="true" value="center">Centre</option>
+						<option value="bottom">Bottom</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td id="background-pos-horiz" class="col1">Background position (horizontal)</td>
+				<td id="background-pos-horiz-opt">
+					<select id="bg-pos-horiz-combobox">
+						<option value="left">Left</option>
+						<option selected="true" value="center">Centre</option>
+						<option value="right">Right</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td id="colourscheme" class="col1">Colour scheme</td>
+				<td id="colourscheme-select">
+					<select id="colourscheme-combobox">
+						<option value="">White</option>
+						<option value="red">Red</option>
+						<option value="green">Green</option>
+						<option value="purple">Purple</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td id="invert" class="col1"><label for="invert-enable">Invert?</label></td>
+				<td id="invert-val"><input id="invert-enable" type="checkbox"></td>
+			</tr>
+			</tbody>
+		</table>
+		<div id="yt"></div>
+		<div id="fadeout"></div>
+		<div id="toast">Click now to switch to normal mode</div>
 	</body>
 </html>
 
