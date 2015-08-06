@@ -1,0 +1,15 @@
+app:
+ # obtained from My SBHS Apps
+ clientID: 'my-cool-app' # your client ID
+ secret: 'wouldntyouliketoknow' # client secret
+ redirectURI: 'http://example.com/'
+
+ # miscellaneous stuff
+ # KEEP THIS SUPER SECRET
+ sessionSecretKey: 'abcdefghijklmnop' # generate using __import__('os').urandom(24)
+ debug: False
+
+net:
+ # listen on...
+ port: 8080
+
