@@ -200,6 +200,31 @@ def notices():
     return jsonify(prettified)
 
 
+@app.route('/api/bettertimetable.json')
+def btimetable():
+    obj = get_shs_api('timetable/timetable.json', flask.request.args)
+    if obj['httpStatus'] != 200:
+        r = make_response(jsonify(obj))
+        r.status_code = obj['httpStatus']
+        return r
+    prettified = {
+        'httpStatus': 200,
+        '_fetchTime': obj['_fetchTime'],
+        'days': obj['days'],
+        'subjInfo': {}
+    }
+    for i in obj['subjects']:
+        b = obj['subjects'][i]
+        if type(b) != dict: continue
+        if not b['title']: continue
+        b['title'] = b['title'].split()
+        if len(b['title'][-1]) == 1:
+            b['title'] = b['title'][1:-1]
+        else:
+            b['title'] = b['title'][1:]
+        b['title'] = ' '.join(b['title'])
+        prettified['subjInfo'][b['year'] + '' + b['shortTitle']] = b
+    return jsonify(prettified)
 
 
 @app.route('/api/belltimes')
@@ -285,7 +310,6 @@ def get_shs_api(path, qs=None):
                 if qs['SESSID'] != 'undefined':
                     sdata = manually_deserialize_session(qs['SESSID'][0])
                     refresh_api_token(sdata)
-                    print(sdata)
                     if 'access_token' in sdata: qs['access_token'] = sdata['access_token']
             else:
                 refresh_api_token()
