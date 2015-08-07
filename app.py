@@ -307,10 +307,11 @@ def get_shs_api(path, qs=None):
             qs = dict(qs) # mutable yay
         if flask.request:
             if 'SESSID' in qs: # mobile app compatibility
-                if qs['SESSID'] != 'undefined':
+                if qs['SESSID'][0] != 'undefined':
                     sdata = manually_deserialize_session(qs['SESSID'][0])
                     refresh_api_token(sdata)
                     if 'access_token' in sdata: qs['access_token'] = sdata['access_token']
+                del qs['SESSID']
             else:
                 refresh_api_token()
                 if 'access_token' in session: qs['access_token'] = session['access_token']
