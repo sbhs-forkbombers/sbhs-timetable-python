@@ -1,11 +1,14 @@
 from flask import Flask, render_template, make_response, g, session
 from flask.json import jsonify
+from hashlib import sha1
+from flask.sessions import session_json_serializer
 import time
 import flask
 import requests
 import yaml
 import json
 import re
+from itsdangerous import URLSafeTimedSerializer
 import traceback
 from calendar import MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
 from datetime import datetime
@@ -37,7 +40,7 @@ def getNextSchoolDay():
     now = datetime.now()
     if now.hour < 15 or (now.hour == 15 and now.hour < 15) and now.weekday() < SATURDAY:
         return now+relativedelta(hour=0,minute=0,second=0)
-    elif now.weekday() >= SATURDAY:
+    elif now.weekday() >= FRIDAY:
         return now+relativedelta(hour=0,minute=0,second=0,weekday=MONDAY)
     else:
         return now+relativedelta(hour=0,minute=0,second=0,days=1)
@@ -45,6 +48,7 @@ def getNextSchoolDay():
 ### routes
 @app.route('/')
 def root():
+    print(getNextSchoolDay())
     config = {
         'bells': {'bells': json.loads(default_bells[getNextSchoolDay().weekday()].replace("'", '"'))},
         'nextHolidayEvent': app.next_event.timestamp() * 1000,
@@ -132,9 +136,9 @@ def today():
             else:
                 subjInfo = {'title': 'a b'}
         # subjInfo['title'] is of the form "10 Maths A"
-        title = re.sub(r' [A-Z0-9]$', '', subjInfo['title']).split() # remove the A/1 - 10 Maths
-        prettified['timetable'][i]['fullName'] = ' '.join(title[1:])
-        prettified['timetable'][i]['fullTeacher'] = re.sub(r' . ', ' ', subjInfo['fullTeacher'])
+        title = re.sub(r' [A-Z0-9]$', '', subjInfo['title']).split() # remove the A/1 - ['10', 'Maths']
+        prettified['timetable'][i]['fullName'] = ' '.join(title[1:]) # 'Maths'
+        prettified['timetable'][i]['fullTeacher'] = re.sub(r' . ', ' ', subjInfo['fullTeacher']) # remove initial
 
         prettified['timetable'][i]['bell'] = bells[i]
         subjID += '_' + i
@@ -145,6 +149,58 @@ def today():
                 prettified['timetable'][i][j] = variations[subjID][j]
     return jsonify(prettified)
 
+@app.route('/api/notices.json')
+def notices():
+    obj = get_shs_api('dailynews/list.json', flask.request.args)
+    if obj['httpStatus'] != 200:
+        r = make_response(jsonify(obj))
+        r.status_code = obj['httpStatus']
+        return r
+    prettified = {
+        'httpStatus': 200,
+        '_fetchTime': int(time.time())
+    }
+    weighted = {}
+
+    if obj['dayInfo']:
+        prettified['date'] = obj['dayInfo']['date']
+        prettified['term'] = obj['dayInfo']['term']
+        prettified['week'] = obj['dayInfo']['week'] + obj['dayInfo']['weekType']
+    else:
+        prettified['date'] = prettified['week'] = prettified['term'] = None
+
+    for i in range(len(obj['notices'])):
+        pEntry = {'isMeeting': False}
+        weight = 0
+        entry = obj['notices'][i]
+        weight = int(entry['relativeWeight'])
+        entry['isMeeting'] = entry['isMeeting'] == 1
+        if entry['isMeeting']:
+            weight += 1
+            pEntry['isMeeting'] = True
+            pEntry['meetingDate'] = entry['meetingDate']
+            if entry['meetingTimeParsed'] != '00:00:00':
+                pEntry['meetingTime'] = entry['meetingTimeParsed']
+            else:
+                pEntry['meetingTime'] = entry['meetingTime']
+            pEntry['meetingPlace'] = entry['meetingLocation']
+        pEntry['id'] = entry['id']
+        pEntry['dTarget'] = entry['displayYears']
+        pEntry['years'] = entry['years']
+        pEntry['title'] = entry['title']
+        pEntry['text'] = entry['content']
+        pEntry['author'] = entry['authorName']
+        pEntry['weight'] = weight
+        if weight in weighted:
+            weighted[weight].append(pEntry)
+        else:
+            weighted[weight] = [pEntry]
+
+    prettified['notices'] = weighted
+    return jsonify(prettified)
+
+
+
 
 @app.route('/api/belltimes')
 def bells():
@@ -152,6 +208,8 @@ def bells():
 
 @app.route('/try_do_oauth')
 def begin_oauth():
+    if 'access_token' in session:
+        return flask.redirect('/?loggedIn=true&mobile_loading')
     return flask.redirect(
         'https://student.sbhs.net.au/api/authorize?response_type=code&client_id=' + cfg['app']['clientID']
         + '&redirect_uri=' + urlencode(cfg['app']['redirectURI'])
@@ -177,10 +235,10 @@ def handle_login_callback():
         session['expires'] = int(time.time()) + obj['expires_in']
     except Exception as e:
         print("Error reaching SBHS!", e)
-    return flask.redirect('/')
+    return flask.redirect('/?loggedIn=true&mobile_loading=true')
 
 
-def refresh_api_token():
+def refresh_api_token(session=session):
     if 'expires' not in session: # not logged in
         return False
     if time.time() > session['expires']:
@@ -203,16 +261,35 @@ def refresh_api_token():
         return True
     return True
 
+def manually_deserialize_session(val):
+    s = URLSafeTimedSerializer(cfg['app']['sessionSecretKey'], salt='cookie-session',
+                               serializer=session_json_serializer,
+                               signer_kwargs={'key_derivation': 'hmac', 'digest_method': sha1})
+    try:
+        session_data = s.loads(val)
+    except Exception as e:
+        print("Failed to load session from querystring!", e)
+        traceback.print_tb(e.__traceback__)
+        session_data = {}
+    return session_data
 
 def get_shs_api(path, qs=None):
+    r = None
     try:
-        if qs == None:
+        if qs is None:
             qs = dict()
         else:
             qs = dict(qs) # mutable yay
         if flask.request:
-            refresh_api_token()
-            qs['access_token'] = session['access_token']
+            if 'SESSID' in qs: # mobile app compatibility
+                if qs['SESSID'] != 'undefined':
+                    sdata = manually_deserialize_session(qs['SESSID'][0])
+                    refresh_api_token(sdata)
+                    print(sdata)
+                    if 'access_token' in sdata: qs['access_token'] = sdata['access_token']
+            else:
+                refresh_api_token()
+                if 'access_token' in session: qs['access_token'] = session['access_token']
         r = requests.get('https://student.sbhs.net.au/api/' + path, params=qs)
         if r.status_code == 200:
             now = int(time.time())
@@ -223,14 +300,23 @@ def get_shs_api(path, qs=None):
         else:
             return {'error': 'invalid sbhs code', 'httpStatus': r.status_code, '_fetchTime': int(time.time())}
     except Exception as e:
-        print("Error reaching SBHS!", e)
+        status = 500
+        if r:
+            # probably an invalid API option
+            print("Error reaching SBHS! (got", r.text, ")",  e)
+            status = r.status_code if r.status_code != 200 else 404
+        else:
+            print("Error reaching SBHS!", e)
         traceback.print_tb(e.__traceback__)
-        return {'error': 'connection failed', 'httpStatus': 500, '_fetchTime': int(time.time())}
+        return {'error': 'connection failed', 'httpStatus': status, '_fetchTime': int(time.time())}
 
 
 @app.route('/api/<path:api>')
 def api(api):
-    return jsonify(get_shs_api(api, flask.request.args))
+    obj = get_shs_api(api, flask.request.args)
+    r = make_response(jsonify(obj))
+    r.status_code = (obj['httpStatus'] if 'httpStatus' in obj else 500)
+    return r
 
 
 if __name__ == '__main__':
@@ -253,4 +339,4 @@ if __name__ == '__main__':
         if dt > datetime.now():
             app.next_event = dt
             break
-    app.run(debug=cfg['app']['debug'], threaded=True, port=cfg['net']['port'])
+    app.run(debug=cfg['app']['debug'], threaded=True, port=cfg['net']['port'], host='0.0.0.0')
