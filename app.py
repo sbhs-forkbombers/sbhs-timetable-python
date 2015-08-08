@@ -1,24 +1,26 @@
-from flask import Flask, render_template, make_response, g, session
+import time
+import json
+import traceback
+from calendar import MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
+from datetime import datetime
+from urllib.parse import quote_plus as urlencode
+
+from flask import Flask, render_template, make_response, session
 from flask.json import jsonify
 from hashlib import sha1
 from flask.sessions import session_json_serializer
 from functools import wraps
-import time
 import flask
 import requests
 import yaml
-import json
 import re
 from itsdangerous import URLSafeTimedSerializer
-import traceback
-from calendar import MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
-from datetime import datetime
-from dateutil.relativedelta import MO, TU, WE, TH, FR, SA, SU, relativedelta
-from urllib.parse import quote_plus as urlencode
+from dateutil.relativedelta import relativedelta
 from scss.compiler import Compiler
 from scss.namespace import Namespace
 from scss.types import Color
 import sbhstimetable.colours as colours
+
 
 # from sessions import SqliteSessionInterface
 app = Flask(__name__)
