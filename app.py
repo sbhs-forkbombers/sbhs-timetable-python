@@ -2,6 +2,7 @@ from flask import Flask, render_template, make_response, g, session
 from flask.json import jsonify
 from hashlib import sha1
 from flask.sessions import session_json_serializer
+from functools import wraps
 import time
 import flask
 import requests
@@ -52,6 +53,7 @@ def getNextSchoolDay():
 
 def etagged(fn):
     get_hash = lambda s: 'W/"' + str(hash(s)) + "$" + str(len(s)) + '"'
+    @wraps(fn)
     def tag():
         test = None
         print(dict(flask.request.headers))
@@ -82,7 +84,6 @@ def etagged(fn):
             return orig_resp
         print("None response from etagged function!")
         flask.abort(404)
-    tag.__name__ = fn.__name__
     return tag
 
 ### routes
