@@ -67,8 +67,7 @@ moment.fn.fromNowCountdown = function() {
 	}
 	return minutes + 'm ' + seconds + 's';
 }
-
-/* global moment */
+;/* global moment */
 /* SBHS-Timetable-Node: Countdown and timetable all at once (NodeJS app).
  * Copyright (C) 2015 James Ye, Simon Shields
  *
@@ -141,7 +140,7 @@ function getNextCountdownEvent() {
 			return cachedCountdownEvent;
 		}
 		_ctteCache = countdownToTheEnd;
-		var termEnd = moment(config.nextHolidayEvent);
+		var termEnd = moment(config.nextHolidayEvent.moment);
 		if (countdownToTheEnd && moment().add(1, 'd').isAfter(termEnd) && moment().isBefore(termEnd)) {
 			countdownLabel = 'School ends';
 			inLabel = '<sup><em>finally</em></sup>in';
@@ -288,8 +287,7 @@ function domReady() {
 }
 
 document.addEventListener('readystatechange', domReady);
-
-/* SBHS-Timetable-Node: Countdown and timetable all at once (NodeJS app).
+;/* SBHS-Timetable-Node: Countdown and timetable all at once (NodeJS app).
  * Copyright (C) 2014 James Ye, Simon Shields
  *
  * This file is part of SBHS-Timetable-Node.
@@ -349,8 +347,7 @@ if (config.loggedIn) {
 }
 
 loadNotices();
-loadBarcodeNews();
-/* SBHS-Timetable-Node: Countdown and timetable all at once (NodeJS app).
+loadBarcodeNews();;/* SBHS-Timetable-Node: Countdown and timetable all at once (NodeJS app).
  * Copyright (C) 2015 James Ye, Simon Shields
  *
  * This file is part of SBHS-Timetable-Node.
@@ -652,8 +649,7 @@ function handleRightPane() {
 }
 
 EventBus.on('bells', handleRightPane);
-
-/* SBHS-Timetable-Node: Countdown and timetable all at once (NodeJS app).
+;/* SBHS-Timetable-Node: Countdown and timetable all at once (NodeJS app).
  * Copyright (C) 2015 James Ye, Simon Shields
  *
  * This file is part of SBHS-Timetable-Node.
@@ -725,8 +721,7 @@ EventBus.on('bells', handleRightPane);
 		}, 10000);
  }
 loadToday();
-
-/* SBHS-Timetable-Node: Countdown and timetable all at once (NodeJS app).
+;/* SBHS-Timetable-Node: Countdown and timetable all at once (NodeJS app).
  * Copyright (C) 2014-2015 James Ye, Simon Shields
  *
  * This file is part of SBHS-Timetable-Node.
@@ -1303,3 +1298,4 @@ function updateSidebarStatus() {
 EventBus.on('notices', updateSidebarStatus);
 EventBus.on('bells', updateSidebarStatus);
 EventBus.on('today', updateSidebarStatus);
+;

@@ -411,7 +411,15 @@ def customise_css():
 
 
 if __name__ == '__main__':
-
+    if cfg['app']['debug']:
+        print("Generating new belltimes.concat.js...")
+        from sbhstimetable.jsconcat import concat_js
+        concat_js('script')
+        print("Done!")
+    else:
+        from os import path
+        if not path.exists('static/belltimes.concat.js'.replace('/', path.sep)):
+            raise Exception("Belltimes.concat.js does not exist, pls create - python -m sbhstimetable.jsconcat")
     print("Loading term data...")
     res = get_shs_api("calendar/terms.json")
     if 'error' in res:
