@@ -28,7 +28,7 @@
 	<script defer src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.1/velocity.ui.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/spin.js/2.0.1/spin.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
-	<link rel="stylesheet" href="/style/index.css" />
+	<link rel="stylesheet" href="/style/index.css{{ scheme |safe }}" />
 	<!--[if !IE]> -->
 	<script>	
 		{% include 'zepto.min.js' %}
@@ -84,7 +84,7 @@
 
 	<div id="left-pane" class="ss pane">
 		<div class="umad">
-			{% if config.loggedIn %}
+			{% if config.loggedIn == 1 %}
 			<a href="/try_do_oauth">Log in</a> to show your timetable
 			{% else %}
 				¯\_(ツ)_/¯ Loading ¯\_(ツ)_/¯
@@ -96,7 +96,7 @@
 
 	<div class="ss pane" id="top-pane">
 		<div class="umad">
-			{% if config.loggedIn %}
+			{% if config.loggedIn == 1 %}
 			<a href="/try_do_oauth">Log in</a> to show the notices
 			{% else %}
 				¯\_(ツ)_/¯ Loading ¯\_(ツ)_/¯

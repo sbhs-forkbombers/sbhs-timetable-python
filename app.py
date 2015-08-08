@@ -50,8 +50,44 @@ def getNextSchoolDay():
     else:
         return now+relativedelta(hour=0,minute=0,second=0,days=1)
 
+def etagged(fn):
+    get_hash = lambda s: 'W/"' + str(hash(s)) + "$" + str(len(s)) + '"'
+    def tag():
+        test = None
+        print(dict(flask.request.headers))
+        if 'If-None-Match' in flask.request.headers:
+            test = flask.request.headers['If-None-Match']
+        orig_resp = fn()
+        res = ''
+        if type(orig_resp) == str:
+            hash = get_hash(orig_resp)
+            if hash == test:
+                print("NOT MODIFIED")
+                res = make_response()
+                res.status = 'Not Modified'
+                res.status_code = 304
+                return res
+            res = make_response(orig_resp)
+            res.headers['ETag'] = hash
+            return res
+        elif orig_resp is not None:
+            o = orig_resp.get_data(as_text=True)
+            hash = get_hash(o)
+            if hash == test:
+                res = make_response()
+                res.status = 'Not Modified'
+                res.status_code = 304
+                return res
+            orig_resp.headers['ETag'] = hash
+            return orig_resp
+        print("None response from etagged function!")
+        flask.abort(404)
+    tag.__name__ = fn.__name__
+    return tag
+
 ### routes
 @app.route('/')
+@etagged
 def root():
     print(getNextSchoolDay())
     config = {
@@ -59,7 +95,12 @@ def root():
         'nextHolidayEvent': app.next_event.timestamp() * 1000,
         'loggedIn': 1 if ('access_token' in session) else 0
     }
-    return render_template('index.html', jsonify=jsonify, config=config)
+    scheme = ''
+    if 'colour' in flask.request.args:
+        scheme = colours.get(flask.request.args['colour'], 'invert' in flask.request.args)
+    elif 'invert' in flask.request.args:
+        scheme = colours.get('default', True)
+    return render_template('index.html', jsonify=jsonify, config=config, scheme=scheme)
 
 
 @app.route('/api/today.json')
@@ -348,6 +389,7 @@ def api(api):
     r.status_code = (obj['httpStatus'] if 'httpStatus' in obj else 500)
     return r
 
+@etagged
 @app.route('/style/index.css')
 def customise_css():
     colour = colours.get_from_qs(flask.request.args)
