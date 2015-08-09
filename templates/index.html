@@ -19,7 +19,7 @@
 <html>
 <head>
 	<meta charset="utf-8" />
-	<meta http-equiv="x-ua-compatible", content="IE=edge" />
+	<meta http-equiv="x-ua-compatible" content="IE=edge" />
 	<meta name="viewport" content="device-width,initial-scale=1" />
 	<meta name="application-name" content="SBHS Timetable" />
 	<meta name="mobile-web-app-capable" content="yes" />
@@ -53,6 +53,8 @@
 	<!--<![endif]-->
 
 	<script async src="/static/belltimes.concat.js?v=1"></script>
+
+    <title>SBHS Timetable</title>
 
 	{% include 'analyse.html' %}
 </head>
@@ -101,7 +103,7 @@
 
 	<div id="left-pane" class="ss pane">
 		<div class="umad">
-			{% if config.loggedIn == 1 %}
+			{% if config.loggedIn == 0 %}
 			<a href="/try_do_oauth">Log in</a> to show your timetable
 			{% else %}
 				¯\_(ツ)_/¯ Loading ¯\_(ツ)_/¯
@@ -113,7 +115,7 @@
 
 	<div class="ss pane" id="top-pane">
 		<div class="umad">
-			{% if config.loggedIn == 1 %}
+			{% if config.loggedIn == 0 %}
 			<a href="/try_do_oauth">Log in</a> to show the notices
 			{% else %}
 				¯\_(ツ)_/¯ Loading ¯\_(ツ)_/¯

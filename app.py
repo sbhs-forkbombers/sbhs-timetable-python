@@ -17,7 +17,7 @@
 import time
 import json
 import traceback
-from calendar import MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
+from calendar import MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
 from datetime import datetime
 from urllib.parse import quote_plus as urlencode
 
@@ -74,11 +74,9 @@ def etagged(fn):
     @wraps(fn)
     def tag():
         test = None
-        print(dict(flask.request.headers))
         if 'If-None-Match' in flask.request.headers:
             test = flask.request.headers['If-None-Match']
         orig_resp = fn()
-        res = ''
         if type(orig_resp) == str:
             hash = get_hash(orig_resp)
             if hash == test:
@@ -264,6 +262,12 @@ def notices():
     prettified['notices'] = weighted
     return jsonify(prettified)
 
+@app.route('/logout')
+def logout():
+    to_del = list(session.keys())
+    for key in to_del:
+        del session[key]
+    return flask.redirect('/')
 
 @app.route('/api/bettertimetable.json')
 def btimetable():
