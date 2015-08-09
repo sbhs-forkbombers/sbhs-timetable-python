@@ -13,3 +13,5 @@ net:
  # listen on...
  port: 8080
 
+comp:
+ java_exe: '/usr/bin/java' # used to minify. Set to 'false' to disable minification
