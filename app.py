@@ -1,7 +1,7 @@
 import time
 import json
 import traceback
-from calendar import MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
+from calendar import MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
 from datetime import datetime
 from urllib.parse import quote_plus as urlencode
 
@@ -46,7 +46,7 @@ default_bells[THURSDAY] = default_bells[WEDNESDAY]
 
 def getNextSchoolDay():
     now = datetime.now()
-    if now.hour < 15 or (now.hour == 15 and now.hour < 15) and now.weekday() < SATURDAY:
+    if (now.hour < 15 or (now.hour == 15 and now.hour < 15)) and now.weekday() < SATURDAY:
         return now+relativedelta(hour=0,minute=0,second=0)
     elif now.weekday() >= FRIDAY:
         return now+relativedelta(hour=0,minute=0,second=0,weekday=MONDAY)

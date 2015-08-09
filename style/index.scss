@@ -78,7 +78,7 @@ td {
 }
 
 .customBg {
-	background: linear-gradient(fade($bg, 50%), fade($bg, 50%)), $bg url(about:blank);
+	background: linear-gradient(rgba($bg, 128), rgba($bg, 128)), $bg url(data:image/png;);
 	background-size: cover;
 	background-attachment: fixed;
 	background-repeat: no-repeat;
@@ -617,7 +617,7 @@ td {
 
 @media screen and (max-device-width: 1100px), screen and (max-width: 1100px), screen and (max-device-height: 500px), screen and (max-height: 500px),
 		screen and (min-resolution: 1.25dppx) and (max-width: 1375px), screen and (min-resolution: 1.25dppx) and (max-height: 625px),
-		screen and (min-resolution: 1.5dppx) and (max-width: 1650px), screen and (min-resolution: 1.5dppx) and (max-height: 750px)
+		screen and (min-resolution: 1.5dppx) and (max-width: 1650px), screen and (min-resolution: 1.5dppx) and (max-height: 750px),
 		screen and (min-resolution: 2dppx) and (max-width: 2200px), screen and (min-resolution: 2dppx) and (max-height: 1000px) {
 	#countdown-label {
 		font-size: 6em;
