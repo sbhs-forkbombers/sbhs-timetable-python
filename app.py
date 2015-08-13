@@ -250,7 +250,7 @@ def notices():
         weight = 0
         entry = obj['notices'][i]
         weight = int(entry['relativeWeight'])
-        entry['isMeeting'] = entry['isMeeting'] == 1
+        entry['isMeeting'] = entry['isMeeting'] == '1'
         if entry['isMeeting']:
             weight += 1
             pEntry['isMeeting'] = True
