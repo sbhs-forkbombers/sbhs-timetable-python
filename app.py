@@ -16,9 +16,10 @@
 
 import time
 import json
+import os
 import traceback
 from calendar import MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
-from datetime import datetime
+from datetime import datetime, timedelta
 from urllib.parse import quote_plus as urlencode
 
 from flask import Flask, render_template, make_response, session
@@ -37,6 +38,7 @@ from scss.namespace import Namespace
 from scss.types import Color
 import sbhstimetable.colours as colours
 
+os.environ['TZ'] = 'Australia/Sydney' # force the right timezone
 
 # from sessions import SqliteSessionInterface
 app = Flask(__name__)
@@ -60,6 +62,7 @@ default_bells = {
 default_bells[TUESDAY] = default_bells[MONDAY]
 default_bells[THURSDAY] = default_bells[WEDNESDAY]
 
+
 def getNextSchoolDay():
     now = datetime.now()
     if (now.hour < 15 or (now.hour == 15 and now.hour < 15)) and now.weekday() < SATURDAY:
@@ -69,8 +72,10 @@ def getNextSchoolDay():
     else:
         return now+relativedelta(hour=0,minute=0,second=0,days=1)
 
+
 def etagged(fn):
     get_hash = lambda s: 'W/"' + str(hash(s)) + "$" + str(len(s)) + '"'
+
     @wraps(fn)
     def tag():
         test = None
@@ -102,7 +107,14 @@ def etagged(fn):
         flask.abort(404)
     return tag
 
-### routes
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(days=90)
+
+
+# routes
 @app.route('/')
 @etagged
 def root():
@@ -212,6 +224,7 @@ def today():
                 prettified['timetable'][i][j] = variations[subjID][j]
     return jsonify(prettified)
 
+
 @app.route('/api/notices.json')
 def notices():
     obj = get_shs_api('dailynews/list.json', flask.request.args)
@@ -262,12 +275,14 @@ def notices():
     prettified['notices'] = weighted
     return jsonify(prettified)
 
+
 @app.route('/logout')
 def logout():
     to_del = list(session.keys())
     for key in to_del:
         del session[key]
     return flask.redirect('/')
+
 
 @app.route('/api/bettertimetable.json')
 def btimetable():
@@ -299,6 +314,7 @@ def btimetable():
 @app.route('/api/belltimes')
 def bells():
     return jsonify(get_shs_api('timetable/bells.json', flask.request.args))
+
 
 @app.route('/try_do_oauth')
 def begin_oauth():
@@ -355,6 +371,7 @@ def refresh_api_token(session=session):
         return True
     return True
 
+
 def manually_deserialize_session(val):
     s = URLSafeTimedSerializer(cfg['app']['sessionSecretKey'], salt='cookie-session',
                                serializer=session_json_serializer,
@@ -366,6 +383,7 @@ def manually_deserialize_session(val):
         traceback.print_tb(e.__traceback__)
         session_data = {}
     return session_data
+
 
 def get_shs_api(path, qs=None):
     r = None
@@ -412,6 +430,7 @@ def api(api):
     r.status_code = (obj['httpStatus'] if 'httpStatus' in obj else 500)
     return r
 
+
 @etagged
 @app.route('/style/index.css')
 def customise_css():
@@ -426,9 +445,6 @@ def customise_css():
     res = make_response(compiler.compile('style/index.scss'))
     res.mimetype = 'text/css'
     return res
-
-
-
 
 if __name__ == '__main__':
     if cfg['app']['debug']:
@@ -450,12 +466,15 @@ if __name__ == '__main__':
     for i in ['1', '2', '3', '4']:
         (year, month, day) = map(int, terms[i]['start']['date'].split('-'))
         dt = datetime(year, month=month, day=day, hour=9, minute=5)
+        print("Comparing date:", dt, datetime.now())
         if dt > datetime.now():
             app.next_event = dt
             break
         (year, month, day) = map(int, terms[i]['end']['date'].split('-'))
         dt = datetime(year, month=month, day=day, hour=15, minute=15)
+        print("Comparing date:", dt, datetime.now())
         if dt > datetime.now():
+            print("Got it")
             app.next_event = dt
             break
     app.run(debug=cfg['app']['debug'], threaded=True, port=cfg['net']['port'], host='0.0.0.0')

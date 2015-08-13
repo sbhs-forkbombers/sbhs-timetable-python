@@ -69,7 +69,7 @@ function getNextCountdownEvent() {
 			return cachedCountdownEvent;
 		}
 		_ctteCache = countdownToTheEnd;
-		var termEnd = moment(config.nextHolidayEvent.moment);
+		var termEnd = moment(config.nextHolidayEvent);
 		if (countdownToTheEnd && moment().add(1, 'd').isAfter(termEnd) && moment().isBefore(termEnd)) {
 			countdownLabel = 'School ends';
 			inLabel = '<sup><em>finally</em></sup>in';
@@ -79,6 +79,7 @@ function getNextCountdownEvent() {
 			return termEnd;
 		}
 		if (moment().isAfter(termEnd)) {
+			console.log("end: ", config.nextHolidayEvent, moment(termEnd).toString(), "now: ", moment().toString());
 			window.location = window.location; // reload
 		}
 		var i = 0;
