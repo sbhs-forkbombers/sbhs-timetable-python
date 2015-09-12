@@ -200,7 +200,8 @@ function domReady() {
 	// holidays
 	if (config.HOLIDAYS) {
 		$('#period-label,#countdown-label,.arrow,.sidebar').css({display: 'none'});
-		$('#yt').css({display: 'block'}).html('<iframe src="https://www.youtube.com/embed/' + config.holidayCfg.video + '?autoplay=1&loop=1" frameborder="0" allowfullscreen></iframe>');
+		$('#yt').css({display: 'block'}).html('<iframe src="https://www.youtube.com/embed/' + config.holidayCfg.video + '?autoplay=1&loop=1&' + config.holidayCfg.videoURIQuery +
+			'" frameborder="0" allowfullscreen></iframe>');
 		$('#in-label').html(config.holidayCfg.text);
 		$('body').css({'background': config.holidayCfg.background});
 	} else {

@@ -122,7 +122,14 @@ def root():
     config = {
         'bells': {'bells': json.loads(default_bells[getNextSchoolDay().weekday()].replace("'", '"'))},
         'nextHolidayEvent': app.next_event.timestamp() * 1000,
-        'loggedIn': 1 if ('access_token' in session) else 0
+        'loggedIn': 1 if ('access_token' in session) else 0,
+        'holidayCfg': {
+            'video': 'ZYmyu6JEXjY',
+            'videoURIQuery': 'listType=user_uploads&list=ThePeladophobian',
+            'text': 'doot doot',
+            'background': '/static/icon.png'
+        },
+        'HOLIDAYS': int(not app.inTerm)
     }
     scheme = ''
     if 'colour' in flask.request.args:
@@ -430,6 +437,24 @@ def api(api):
     r.status_code = (obj['httpStatus'] if 'httpStatus' in obj else 500)
     return r
 
+def find_next_event(app):
+    terms = app.terms
+    for i in ['1', '2', '3', '4']:
+        (year, month, day) = map(int, terms[i]['start']['date'].split('-'))
+        dt = datetime(year, month=month, day=day, hour=9, minute=5)
+        print("Comparing date:", dt, datetime.now())
+        if dt > datetime.now():
+            app.next_event = dt
+            app.inTerm = False
+            break
+        (year, month, day) = map(int, terms[i]['end']['date'].split('-'))
+        dt = datetime(year, month=month, day=day, hour=15, minute=15)
+        print("Comparing date:", dt, datetime.now())
+        if dt > datetime.now():
+            print("Got it")
+            app.next_event = dt
+            app.inTerm = True
+            break
 
 @etagged
 @app.route('/style/index.css')
@@ -445,6 +470,12 @@ def customise_css():
     res = make_response(compiler.compile('style/index.scss'))
     res.mimetype = 'text/css'
     return res
+
+@app.before_request
+def check_time():
+    if datetime.now() > app.next_event:
+        find_next_event(app)
+
 
 if __name__ == '__main__':
     if cfg['app']['debug']:
@@ -462,19 +493,9 @@ if __name__ == '__main__':
         raise Exception("rip")
     terms = res['terms']
     app.terms = terms
+    app.next_event = 0
+    app.inTerm = True
+    find_next_event(app)
     print("Done")
-    for i in ['1', '2', '3', '4']:
-        (year, month, day) = map(int, terms[i]['start']['date'].split('-'))
-        dt = datetime(year, month=month, day=day, hour=9, minute=5)
-        print("Comparing date:", dt, datetime.now())
-        if dt > datetime.now():
-            app.next_event = dt
-            break
-        (year, month, day) = map(int, terms[i]['end']['date'].split('-'))
-        dt = datetime(year, month=month, day=day, hour=15, minute=15)
-        print("Comparing date:", dt, datetime.now())
-        if dt > datetime.now():
-            print("Got it")
-            app.next_event = dt
-            break
+
     app.run(debug=cfg['app']['debug'], threaded=True, port=cfg['net']['port'], host='0.0.0.0')
