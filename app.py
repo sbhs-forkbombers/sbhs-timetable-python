@@ -107,6 +107,20 @@ def etagged(fn):
         flask.abort(404)
     return tag
 
+def nocache(fn):
+    @wraps(fn)
+    def uncache():
+        orig_resp = fn()
+        if type(orig_resp) == Flask.response_class:
+            print("RESPONSE CLASS")
+        else:
+            orig_resp = make_response(orig_resp)
+        orig_resp.headers['Prgama'] = 'no-cache'
+        orig_resp.headers['Expires'] = 'Sat, 26 Jul 1997 05:00:00 GMT'
+        orig_resp.headers['Cache-Control'] = 'no-cache, must-revalidate'
+        return orig_resp
+    return uncache
+
 
 @app.before_request
 def make_session_permanent():
@@ -140,6 +154,7 @@ def root():
 
 
 @app.route('/api/today.json')
+@nocache
 def today():
     #return 'Yep - ' + str(getNextSchoolDay())
     json = get_shs_api('timetable/daytimetable.json', flask.request.args)
@@ -233,6 +248,7 @@ def today():
 
 
 @app.route('/api/notices.json')
+@nocache
 def notices():
     obj = get_shs_api('dailynews/list.json', flask.request.args)
     if obj['httpStatus'] != 200:
@@ -292,6 +308,7 @@ def logout():
 
 
 @app.route('/api/bettertimetable.json')
+@nocache
 def btimetable():
     obj = get_shs_api('timetable/timetable.json', flask.request.args)
     if obj['httpStatus'] != 200:
@@ -319,6 +336,7 @@ def btimetable():
 
 
 @app.route('/api/belltimes')
+@nocache
 def bells():
     return jsonify(get_shs_api('timetable/bells.json', flask.request.args))
 
@@ -431,6 +449,7 @@ def get_shs_api(path, qs=None):
 
 
 @app.route('/api/<path:api>')
+@nocache
 def api(api):
     obj = get_shs_api(api, flask.request.args)
     r = make_response(jsonify(obj))
@@ -475,6 +494,7 @@ def customise_css():
 def check_time():
     if datetime.now() > app.next_event:
         find_next_event(app)
+    print("before_request")
 
 
 if __name__ == '__main__':
