@@ -61,6 +61,21 @@ default_bells = {
 
 default_bells[TUESDAY] = default_bells[MONDAY]
 default_bells[THURSDAY] = default_bells[WEDNESDAY]
+default_bells['mon'] = default_bells['tue'] = [
+    {'bell':'Roll Call','time':'09:00'},{'bell':'1','time':'09:05'},{'bell':'Transition','time':'10:05'},{'bell':'2','time':'10:10'},
+    {'bell':'Lunch 1','time':'11:10'},{'bell':'Lunch 2','time':'11:30'},{'bell':'3','time':'11:50'},{'bell':'Transition','time':'12:50'},
+    {'bell':'4','time':'12:55'},{'bell':'Recess','time':'13:55'},{'bell':'5','time':'14:15'},{'bell':'End of Day','time':'15:15'}
+]
+default_bells['thu'] = default_bells['wed'] = [
+    {'bell':'Roll Call','time':'09:00'},{'bell':'1','time':'09:05'},{'bell':'Transition','time':'10:05'},{'bell':'2','time':'10:10'},
+    {'bell':'Recess','time':'11:10'},{'bell':'3','time':'11:30'},{'bell':'Lunch 1','time':'12:30'},{'bell':'Lunch 2','time':'12:50'},
+    {'bell':'4','time':'13:10'},{'bell':'Transition','time':'14:10'},{'bell':'5','time':'14:15'},{'bell':'End of Day','time':'15:15'}
+]
+default_bells['fri'] = [
+    {'bell':'Roll Call','time':'09:25'},{'bell':'1','time':'09:30'},{'bell':'Transition','time':'10:25'},{'bell':'2','time':'10:30'},
+    {'bell':'Recess','time':'11:25'},{'bell':'3','time':'11:45'},{'bell':'Lunch 1','time':'12:40'},{'bell':'Lunch 2','time':'13:00'},
+    {'bell':'4','time':'13:20'},{'bell':'Transition','time':'14:15'},{'bell':'5','time':'14:20'},{'bell':'End of Day','time':'15:15'}
+]
 
 
 def getNextSchoolDay():
@@ -338,7 +353,25 @@ def btimetable():
 @app.route('/api/belltimes')
 @nocache
 def bells():
-    return jsonify(get_shs_api('timetable/bells.json', flask.request.args))
+    obj = get_shs_api('timetable/bells.json', flask.request.args)
+    if obj['httpStatus'] != 200 or obj['status'] == 'Error':
+        r = make_response(jsonify(obj))
+        r.status_code = obj['httpStatus']
+        return r
+    shortDow = obj['day'].lower()[:3]
+    normal = default_bells[shortDow]
+    for i in range(len(obj['bells'])):
+        obj['bells'][i]['index'] = i
+        if normal[i]['time'] != obj['bells'][i]['time']:
+            obj['bells'][i]['different'] = True
+            obj['bells'][i]['normally'] = normal[i]['time']
+    return jsonify(obj)
+
+
+
+
+
+
 
 
 @app.route('/try_do_oauth')
