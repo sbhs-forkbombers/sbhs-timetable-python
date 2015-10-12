@@ -124,8 +124,8 @@ def etagged(fn):
 
 def nocache(fn):
     @wraps(fn)
-    def uncache():
-        orig_resp = fn()
+    def uncache(*args, **kwargs):
+        orig_resp = fn(*args, **kwargs)
         if type(orig_resp) == Flask.response_class:
             print("RESPONSE CLASS")
         else:
@@ -193,6 +193,8 @@ def today():
         t = json['classVariations']
         for k in t:
             subj = t[k]['year'] + t[k]['title'] + '_' + t[k]['period']
+            if 'casualDisplay' not in t[k]:
+                t[k]['casualDisplay'] = None
             variations[subj] = {
                 'hasCover': t[k]['type'] != 'nocover',
                 'casual': t[k]['casual'],
