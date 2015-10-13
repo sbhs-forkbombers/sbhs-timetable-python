@@ -142,7 +142,7 @@ td {
 }
 
 .meeting .notice-data {
-	background-color: $highBg;
+	background-color: rgba($highBg, 0.8);
 	border: 0;
 }
 
@@ -203,7 +203,7 @@ td {
 	z-index: 3;
 	overflow: auto;
 	width: 40%;
-	background-color: rgba($bg, 51);
+	background-color: rgba($bg, 0.75);
 }
 
 .small-caps {
