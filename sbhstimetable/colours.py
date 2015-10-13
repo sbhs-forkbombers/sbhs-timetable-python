@@ -55,6 +55,8 @@ class Colour:
     def __str__(self):
         return '?bg=' + urlencode(self.data['bg']) + '&fg=' + urlencode(self.data['fg']) + '&highBg=' + urlencode(self.data['highBg']) + '&highFg=' + urlencode(self.data['highFg'])
 
+    def asdict(self):
+        return self.data
 
 
 def get(name, invert):

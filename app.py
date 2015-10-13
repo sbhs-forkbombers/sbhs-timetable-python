@@ -165,6 +165,9 @@ def root():
         scheme = colours.get(flask.request.args['colour'], 'invert' in flask.request.args)
     elif 'invert' in flask.request.args:
         scheme = colours.get('default', True)
+    else:
+        scheme = colours.get('default', False)
+    config['cscheme'] = scheme.asdict()
     return render_template('index.html', jsonify=jsonify, config=config, scheme=scheme)
 
 
