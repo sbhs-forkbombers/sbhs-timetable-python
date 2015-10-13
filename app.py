@@ -514,6 +514,11 @@ def find_next_event(app):
             break
 
 @etagged
+@app.route('/.well-known/assetlinks.json')
+def app_link():
+    return flask.send_from_directory('static', 'assetlinks.json')
+
+@etagged
 @app.route('/style/index.css')
 def customise_css():
     colour = colours.get_from_qs(flask.request.args)
