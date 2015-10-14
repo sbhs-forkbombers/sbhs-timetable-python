@@ -5,6 +5,15 @@
 		"package_name": "com.sbhstimetable.sbhs_timetable_android",
 		"sha256_cert_fingerprints": [
 			"3F:C0:77:07:D7:32:F2:27:03:4E:CC:06:C4:D8:27:BC:9C:AF:31:02:10:83:DD:B3:A3:62:DB:9B:A9:11:BF:11",
+		]
+	}
+},
+{
+	"relation": ["delegate_permission/common.handle_all_urls"],
+	"target": {
+		"namespace": "android_app",
+		"package_name": "com.sbhstimetable.sbhs_timetable_android_dev",
+		"sha256_cert_fingerprints": [
 		"78:A8:E1:1D:31:F3:93:54:3E:1C:96:7E:63:1E:15:D7:A1:08:44:BD:BD:75:60:BC:53:8F:36:C1:BB:D8:F0:83"
 		]
 	}
