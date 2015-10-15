@@ -28,6 +28,12 @@ var countdownToTheEnd = true; // only in pre-holiday mode
 var _ctteCache = true; // internal use only
 
 function getNextSchoolDay() {
+	if (window.belltimes) {
+		var m = moment(window.belltimes.date, "YYYY-MM-DD");
+		if (m.hours(15).minutes(15).isAfter(moment())) {
+			return m.startOf('day');
+		}
+	}
 	if (window.today) {
 		var m = moment(window.today.date, "YYYY-MM-DD");
 		if (m.hours(15).minutes(15).isAfter(moment())) { // 3:15 on the given day is after now
@@ -178,7 +184,7 @@ function updateCountdown() {
 }
 
 function reloadBells() {
-	$.getJSON('/api/belltimes?date=' + getNextSchoolDay().format('YYYY-MM-DD'), function(data) {
+	$.getJSON('/api/belltimes', function(data) {
 		EventBus.post('bells', data);
 	});
 }
