@@ -196,12 +196,12 @@ def today():
         t = json['classVariations']
         for k in t:
             subj = t[k]['year'] + t[k]['title'] + '_' + t[k]['period']
-            if 'casualDisplay' not in t[k]:
-                t[k]['casualDisplay'] = None
+            if 'casualSurname' not in t[k]:
+                t[k]['casualSurname'] = None
             variations[subj] = {
                 'hasCover': t[k]['type'] != 'nocover',
                 'casual': t[k]['casual'],
-                'casualDisplay': t[k]['casualDisplay'],
+                'casualDisplay': t[k]['casualSurname'],
                 'cancelled': t[k]['type'] == 'nocover',
                 'hasCasual': t[k]['type'] == 'replacement',
                 'varies': t[k]['type'] != 'novariation'
