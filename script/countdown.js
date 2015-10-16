@@ -199,6 +199,27 @@ function domReady() {
 		document.getElementById('countdown-label').innerHTML = '<img src="/api/picture.jpeg"></img>';
 		return;
 	}
+	/*if (/Android ([\d.]+);/.test(window.navigator.userAgent) && !('annoyed' in window.localStorage)) {
+		var match = window.navigator.userAgent.match(/Android ([\d.]+);/)[1].split('.');
+		var canInstallApp = false;
+		if (match[0] == '4') {
+			if (match.length >= 3) {
+				if (Number(match[2]) >= 3) {
+					// API 15!
+					canInstallApp = true;
+				}
+			} else if (Number(match[1]) > 0) {
+				canInstallApp = true;
+			}
+		} else if (Number(match[0]) > 4) {
+			canInstallApp = true;
+		}
+		window.localStorage.annoyed = true;
+		if (canInstallApp && confirm("We have an app! Install it now for offline timetable and class notifications?")) {
+			window.location = 'http://play.google.com/store/apps/details?id=com.sbhstimetable.sbhs_timetable_android';
+			//window.location = 'market://details?id=com.sbhstimetable.sbhs_timetable_android';
+		}
+	}*/
 	window.belltimes = window.config.bells;
 	$('#top-line-notice').text(belltimes.bellsAlteredReason);
 	updateCountdown();

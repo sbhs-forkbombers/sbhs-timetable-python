@@ -131,7 +131,7 @@ function toggleExpansion(ev) {
 	/* jshint validthis: true */
 	'use strict';
 	if (ev.target.id == 'expand') {
-		$('#countdown-label').css({fontSize: '10em', top: '50%', left: 0, width: '100%', marginTop: '-1em', position: 'fixed'});
+		$('#countdown-label').velocity({zIndex: 0, fontSize: '10em', top: '50%', left: 0, width: '100%', marginTop: '-1em', position: 'fixed'});
 		$('#period-label,#in-label,#feedback,#sidebar,.really-annoying').velocity('finish').velocity('fadeOut');
 		$('#expand').css({display: 'none'});
 		$('#collapse').css({'display': 'block'});
