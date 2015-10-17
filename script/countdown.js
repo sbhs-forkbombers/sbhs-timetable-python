@@ -26,6 +26,7 @@ var forcedDayOffset = 0; // brute-forcing public holidays and whatnot
 var sbhsFailed = false;
 var countdownToTheEnd = true; // only in pre-holiday mode
 var _ctteCache = true; // internal use only
+var curBellIndex = 0;
 
 function getNextSchoolDay() {
 	if (window.belltimes) {
@@ -140,6 +141,8 @@ function getNextCountdownEvent() {
 						countdownLabel = next.bell;
 					}
 				}*/
+				$('.cur-bell-row').removeClass('cur-bell-row');
+				$('#bell-row-'+i).addClass('cur-bell-row');
 				cachedCountdownEvent = nextSchoolDay;
 				return nextSchoolDay;
 			}
@@ -178,6 +181,7 @@ EventBus.on('bells', function(ev, bells) {
 function updateCountdown() {
 	if (config.HOLIDAYS || sbhsFailed) return;
 	$('#countdown-label').text(getNextCountdownEvent().fromNowCountdown());///*Math.abs(getNextCountdownEvent().diff(moment(), 'seconds')) + 's'*/);
+	$('.cur-bell-row .belltime').text(getNextCountdownEvent().fromNowCountdown(true));
 	$('#in-label').html(inLabel);
 	$('#period-label').text(countdownLabel);
 

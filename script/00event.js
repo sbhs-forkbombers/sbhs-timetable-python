@@ -48,7 +48,7 @@ window.EventBus = {};
 	}
 })(window.EventBus);
 
-moment.fn.fromNowCountdown = function() {
+moment.fn.fromNowCountdown = function(isCool) {
 	var diff = Math.abs(moment().diff(this, 's'));
 	var seconds = (diff % 60) + '';
 	diff = Math.floor(diff/60);
@@ -61,7 +61,9 @@ moment.fn.fromNowCountdown = function() {
 		minutes = '0' + minutes;
 	}
 	if (diff > 0) {
+		if (isCool) return diff +':' + minutes + ':' + seconds;
 		return diff + 'h ' + minutes + 'm ' + seconds + 's';
 	}
+	if (isCool) return minutes + ':' + seconds;
 	return minutes + 'm ' + seconds + 's';
 }

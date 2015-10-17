@@ -282,10 +282,11 @@ function handleRightPane() {
 			rowClass = 'period';
 			bell = 'Period ' + bell;
 		}
+		rowClass += '" id="bell-row-'+i;
 		if (bells[i].different) {
 			timeClass += ' changed" title="normally ' + bells[i].normally;
 		}
-		res += '<tr class="'+rowClass+'"><td class="bell">'+bell+'</td><td class="'+timeClass+'">'+bells[i].time+'</td></tr>';
+		res += '<tr class="'+rowClass+'"><td class="bell">'+bell+'</td><td class="belltime '+timeClass+'">'+bells[i].time+'</td></tr>';
 	}
 	res += '</tbody></table>';
 	if (fetch < 0) {
