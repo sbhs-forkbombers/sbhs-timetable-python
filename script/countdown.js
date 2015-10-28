@@ -141,7 +141,9 @@ function getNextCountdownEvent() {
 						countdownLabel = next.bell;
 					}
 				}*/
-				$('.cur-bell-row').removeClass('cur-bell-row');
+				//$('.cur-bell-row').removeClass('cur-bell-row');
+				if (window.belltimes)
+					handleRightPane();
 				$('#bell-row-'+i).addClass('cur-bell-row');
 				cachedCountdownEvent = nextSchoolDay;
 				return nextSchoolDay;

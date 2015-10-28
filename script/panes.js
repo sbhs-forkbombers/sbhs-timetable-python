@@ -268,7 +268,7 @@ function handleRightPane() {
 	/* Fill out the right pane */
 	'use strict';
 	var bells = belltimes.bells, rowClass, bell, timeClass;
-	var res = '<div id="bell-day">' + window.belltimes.day + ' ' + window.belltimes.weekType.replace('Z', '?') + ' <a href="javascript:void(0)" onclick="reloadBells()">reload?</a></div><br />';
+	var res = '<div id="bell-day">' + window.belltimes.day + ' ' + (window.belltimes.weekType||'Z').replace('Z', '?') + ' <a href="javascript:void(0)" onclick="reloadBells()">reload?</a></div><br />';
 	var fetch = (window.belltimes._fetchTime || -1) * 1000;
 	res += '<br /><br /><table><tbody>';
 	for (var i in bells) {
