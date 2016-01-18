@@ -16,7 +16,7 @@
 import os
 def concat_js(dir,out='static/belltimes.concat.js'):
     out = open(out, mode='w')
-    for i in os.listdir(dir):
+    for i in sorted(os.listdir(dir)):
         i = os.path.join(dir, i)
         if os.path.isfile(i):
             with open(i) as f:
