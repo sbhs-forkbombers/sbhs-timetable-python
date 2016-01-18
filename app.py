@@ -220,7 +220,7 @@ def today():
     # and bells - only period bells
     bells = {}
     for i in range(len(json['bells'])):
-        if json['bells'][i]['bell'][0].isdigit():
+        if json['bells'][i]['bell'] is not None and json['bells'][i]['bell'][0].isdigit():
             b = {
                 'start': json['bells'][i]['time'],
                 'title': json['bells'][i]['bellDisplay'],
