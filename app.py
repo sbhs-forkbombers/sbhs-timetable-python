@@ -19,7 +19,7 @@ import json
 import os
 import traceback
 from calendar import MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from urllib.parse import quote_plus as urlencode
 
 from flask import Flask, render_template, make_response, session
@@ -551,7 +551,7 @@ if __name__ == '__main__':
         if not path.exists('static/belltimes.concat.js'.replace('/', path.sep)):
             raise Exception("Belltimes.concat.js does not exist, pls create - python -m sbhstimetable.jsconcat")
     print("Loading term data...")
-    res = get_shs_api("calendar/terms.json")
+    res = get_shs_api("calendar/terms.json", qs={'year': date.today().year})
     if 'error' in res:
         raise Exception("rip")
     terms = res['terms']
