@@ -81,6 +81,14 @@ function handleLeftPane() {
 			for (var j = 0; j < subj.length; j++) {
 				var z = subjName.indexOf(subj[j+1]);
 				z = z < 0 ? undefined : z;
+				if (!z) {
+					if (!subj[j+1]) {
+						z = -1;
+					} else {
+						z = subjName.indexOf(subj[j+1].toLowerCase());
+					}
+				}
+				z = z < 0 ? undefined : z;
 				var mStr = subjName.substring(idx+1, z);
 				nSubj += subj[j] + '<span class="subj-expand ' + (cancelled ? 'cancelled':'') + '">'+mStr+'</span>';
 				idx = z;
