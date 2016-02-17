@@ -63,7 +63,13 @@ def get(name, invert):
     res = COLOURS['default']
     if name in COLOURS:
         res = COLOURS[name]
+
     if invert:
+        # don't accidentally overwrite all the things
+        copy = {}
+        for key in res:
+            copy[key] = res[key]
+        res = copy
         (res['fg'],res['bg']) = (res['bg'],res['fg'])
         (res['highFg'],res['highBg']) = (res['highBg'],res['highFg'])
     return Colour(res)
