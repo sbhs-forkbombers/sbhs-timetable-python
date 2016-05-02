@@ -153,8 +153,8 @@ def root():
         'nextHolidayEvent': app.next_event.timestamp() * 1000,
         'loggedIn': 1 if ('access_token' in session) else 0,
         'holidayCfg': {
-            'video': 'ZYmyu6JEXjY',
-            'videoURIQuery': 'listType=user_uploads&list=ThePeladophobian',
+            'video': 'Sagg08DrO5U',
+            'videoURIQuery': '',
             'text': 'doot doot',
             'background': '/static/icon.png'
         },
