@@ -148,6 +148,14 @@ def make_session_permanent():
 @etagged
 def root():
     print(getNextSchoolDay())
+    userData = {}
+    if 'access_token' in session:
+        if 'user_data' not in session or 'error' in session['user_data']:
+            session['user_data'] = get_shs_api('details/userinfo.json')
+        if 'error' not in session['user_data']:
+            userData['year'] = session['user_data']['yearGroup']
+            userData['fname'] = session['user_data']['givenName']
+            userData['lname'] = session['user_data']['surname']
     config = {
         'bells': {'bells': json.loads(default_bells[getNextSchoolDay().weekday()].replace("'", '"'))},
         'nextHolidayEvent': app.next_event.timestamp() * 1000,
@@ -158,6 +166,7 @@ def root():
             'text': 'doot doot',
             'background': '/static/icon.png'
         },
+        'userData': userData,
         'HOLIDAYS': int(not app.inTerm)
     }
     scheme = ''
@@ -372,13 +381,6 @@ def bells():
             obj['bells'][i]['normally'] = normal[i]['time']
     return jsonify(obj)
 
-
-
-
-
-
-
-
 @app.route('/try_do_oauth')
 def begin_oauth():
     if 'access_token' in session:
@@ -406,6 +408,7 @@ def handle_login_callback():
         session['access_token'] = obj['access_token']
         session['refresh_token'] = obj['refresh_token']
         session['expires'] = int(time.time()) + obj['expires_in']
+        session['user_data'] = get_shs_api('details/userinfo.json')
     except Exception as e:
         print("Error reaching SBHS!", e)
     return flask.redirect('/?loggedIn=true&mobile_loading=true')
@@ -537,7 +540,6 @@ def customise_css():
 def check_time():
     if datetime.now() > app.next_event:
         find_next_event(app)
-    print("before_request")
 
 
 if __name__ == '__main__':

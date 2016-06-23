@@ -47,7 +47,7 @@
 	<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
 	<link rel="stylesheet" href="/style/index.css{{ scheme |safe }}" />
 	<!--[if !IE]> -->
-	<script>	
+	<script>
 		{% include 'zepto.min.js' %}
 	</script>
 	<!--<![endif]-->
@@ -80,7 +80,7 @@
 		<span class="sidebar-item" id="cached">
 			<span id="shortdata">
 				<span id="shortdata-desc">
-					<span id="sdata-bells">B: 
+					<span id="sdata-bells">B:
 						<span id="belltimes-short">?</span>
 					</span>
 					<span id="sdata-timetable">&nbsp;T:
@@ -129,17 +129,21 @@
 		<div class="umad">
 			¯\_(ツ)_/¯ Loading ¯\_(ツ)_/¯
 		</div>
-	</div>	
+	</div>
 	<div class="arrow" id="right-pane-arrow"></div>
 	<div class="target" id="right-pane-traget"></div>
 
 	<div class="nomobile" id="update">
+		{% if config.loggedIn and config.userData.year == '12' %}
+		HSC? More like <a href="http://hsceebs.xyz">hsceebs</a>
+		{% else %}
 		Wanna learn to code? Check out the website for <a href="http://highforge.club">Forge</a>!
+		{% endif %}
     </div>
 
     <div class="nomobile" id="expand-toggle">
-    	<div id="expand" class="mega-octicon octicon-screen-full"></div>
-    	<div id="collapse" class="mega-octicon octicon-screen-normal"></div>
+		<div id="expand" class="mega-octicon octicon-screen-full"></div>
+		<div id="collapse" class="mega-octicon octicon-screen-normal"></div>
     </div>
 
 	<div id="background-image"></div>
