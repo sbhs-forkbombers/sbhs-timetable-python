@@ -39,7 +39,7 @@ function getNextSchoolDay() {
 		var m = moment(window.today.date, "YYYY-MM-DD");
 		if (m.hours(15).minutes(15).isAfter(moment())) { // 3:15 on the given day is after now
 			return m.startOf('day');					 // so it's legit. Otherwise, outdated today.json
-		} 
+		}
 	}
 	var today = moment();
 	var dow = today.days();
@@ -77,7 +77,7 @@ function getNextCountdownEvent() {
 		}
 		_ctteCache = countdownToTheEnd;
 		var termEnd = moment(config.nextHolidayEvent);
-		if (countdownToTheEnd && moment().add(1, 'd').isAfter(termEnd) && moment().isBefore(termEnd)) {
+		if (countdownToTheEnd && ((moment().add(1, 'd').isAfter(termEnd) && moment().isBefore(termEnd)) || (config.holidayEventData.term == '3' && config.holidayEventData.end && config.userData.year == '12'))) {
 			countdownLabel = 'School ends';
 			inLabel = '<sup><em>finally</em></sup>in';
 			$('#in-label,#countdown-label,#period-label').addClass('toggleable');
@@ -182,7 +182,7 @@ EventBus.on('bells', function(ev, bells) {
 
 function updateCountdown() {
 	if (config.HOLIDAYS || sbhsFailed) return;
-	$('#countdown-label').text(getNextCountdownEvent().fromNowCountdown());///*Math.abs(getNextCountdownEvent().diff(moment(), 'seconds')) + 's'*/);
+	$('#countdown-label').text(getNextCountdownEvent().fromNowCountdown(false, countdownToTheEnd));///*Math.abs(getNextCountdownEvent().diff(moment(), 'seconds')) + 's'*/);
 	$('.cur-bell-row .belltime').text(getNextCountdownEvent().fromNowCountdown(true));
 	$('#in-label').html(inLabel);
 	$('#period-label').text(countdownLabel);

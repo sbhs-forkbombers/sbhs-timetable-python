@@ -48,7 +48,7 @@ window.EventBus = {};
 	}
 })(window.EventBus);
 
-moment.fn.fromNowCountdown = function(isCool) {
+moment.fn.fromNowCountdown = function(isCool, showDays) {
 	var diff = Math.abs(moment().diff(this, 's'));
 	var seconds = (diff % 60) + '';
 	diff = Math.floor(diff/60);
@@ -60,9 +60,16 @@ moment.fn.fromNowCountdown = function(isCool) {
 	if (minutes.length < 2) {
 		minutes = '0' + minutes;
 	}
+	if (showDays) {
+		var hours = (diff % 24) + '';
+		if (hours.length < 2) hours = '0' + hours;
+		diff = Math.floor(diff / 24);
+		var days = diff;
+		diff = hours;
+	}
 	if (diff > 0) {
 		if (isCool) return diff +':' + minutes + ':' + seconds;
-		return diff + 'h ' + minutes + 'm ' + seconds + 's';
+		return (showDays ? days + 'd ' : '') + diff + 'h ' + minutes + 'm ' + seconds + 's';
 	}
 	if (isCool) return minutes + ':' + seconds;
 	return minutes + 'm ' + seconds + 's';
