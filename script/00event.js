@@ -71,6 +71,5 @@ moment.fn.fromNowCountdown = function(isCool, showDays) {
 		if (isCool) return diff +':' + minutes + ':' + seconds;
 		return (showDays ? days + 'd ' : '') + diff + 'h ' + minutes + 'm ' + seconds + 's';
 	}
-	if (isCool) return minutes + ':' + seconds;
 	return minutes + 'm ' + seconds + 's';
 }
