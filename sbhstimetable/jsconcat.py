@@ -18,7 +18,7 @@ def concat_js(dir,out='static/belltimes.concat.js'):
     out = open(out, mode='w')
     for i in sorted(os.listdir(dir)):
         i = os.path.join(dir, i)
-        if os.path.isfile(i):
+        if os.path.isfile(i) and i.endswith('.js') and not i.endswith('.concat.js'):
             with open(i) as f:
                 for l in f:
                     out.write(l)
