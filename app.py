@@ -159,6 +159,7 @@ def root():
     config = {
         'bells': {'bells': json.loads(default_bells[getNextSchoolDay().weekday()].replace("'", '"'))},
         'nextHolidayEvent': app.next_event.timestamp() * 1000,
+        'holidayEventData': app.next_event_data,
         'loggedIn': 1 if ('access_token' in session) else 0,
         'holidayCfg': {
             'video': 'Sagg08DrO5U',
@@ -390,7 +391,6 @@ def begin_oauth():
         + '&redirect_uri=' + urlencode(cfg['app']['redirectURI'])
         + '&scope=all-ro&state=' + str(int(time.time())))
 
-
 @app.route('/login')
 def handle_login_callback():
     qs = flask.request.args
@@ -412,7 +412,6 @@ def handle_login_callback():
     except Exception as e:
         print("Error reaching SBHS!", e)
     return flask.redirect('/?loggedIn=true&mobile_loading=true')
-
 
 def refresh_api_token(session=session):
     if 'expires' not in session: # not logged in
@@ -437,7 +436,6 @@ def refresh_api_token(session=session):
         return True
     return True
 
-
 def manually_deserialize_session(val):
     s = URLSafeTimedSerializer(cfg['app']['sessionSecretKey'], salt='cookie-session',
                                serializer=session_json_serializer,
@@ -449,7 +447,6 @@ def manually_deserialize_session(val):
         traceback.print_tb(e.__traceback__)
         session_data = {}
     return session_data
-
 
 def get_shs_api(path, qs=None):
     r = None
@@ -488,7 +485,6 @@ def get_shs_api(path, qs=None):
         traceback.print_tb(e.__traceback__)
         return {'error': 'connection failed', 'httpStatus': status, '_fetchTime': int(time.time())}
 
-
 @app.route('/api/<path:api>')
 @nocache
 def api(api):
@@ -502,17 +498,22 @@ def find_next_event(app):
     for i in ['1', '2', '3', '4']:
         (year, month, day) = map(int, terms[i]['start']['date'].split('-'))
         dt = datetime(year, month=month, day=day, hour=9, minute=5)
-        print("Comparing date:", dt, datetime.now())
         if dt > datetime.now():
             app.next_event = dt
             app.inTerm = False
+            app.next_event_data = {
+                'term': i,
+                'end': 0
+            }
             break
         (year, month, day) = map(int, terms[i]['end']['date'].split('-'))
         dt = datetime(year, month=month, day=day, hour=15, minute=15)
-        print("Comparing date:", dt, datetime.now())
         if dt > datetime.now():
-            print("Got it")
             app.next_event = dt
+            app.next_event_data = {
+                'term': i,
+                'end': 1
+            }
             app.inTerm = True
             break
 
