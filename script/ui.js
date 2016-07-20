@@ -62,7 +62,8 @@ function toast() {
 
 function toggleCountdownMode() {
 	countdownToTheEnd = !countdownToTheEnd;
-	$('#toast').text('Click now to switch to ' + (countdownToTheEnd ? 'normal' : 'hurry-up-i-want-to-go-home') + ' mode');
+	window.localStorage.ctteEnabled = countdownToTheEnd;
+	$('#toast').text('Click now to switch to ' + (countdownToTheEnd ? 'normal' : 'hype') + ' mode');
 	getNextCountdownEvent();
 	updateCountdown();
 }

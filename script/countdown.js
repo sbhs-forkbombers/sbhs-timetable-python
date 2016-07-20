@@ -24,7 +24,7 @@ var countdownLabel = 'Loading...';
 var inLabel = '';
 var forcedDayOffset = 0; // brute-forcing public holidays and whatnot
 var sbhsFailed = false;
-var countdownToTheEnd = true; // only in pre-holiday mode
+var countdownToTheEnd = window.localStorage.ctteEnabled == undefined ? true : window.localStorage.ctteEnabled == 'true'; // only in pre-holiday mode
 var _ctteCache = true; // internal use only
 
 function getNextSchoolDay() {
@@ -76,13 +76,16 @@ function getNextCountdownEvent() {
 		}
 		_ctteCache = countdownToTheEnd;
 		var termEnd = moment(config.nextHolidayEvent);
-		if (countdownToTheEnd && ((moment().add(1, 'd').isAfter(termEnd) && moment().isBefore(termEnd)) || (config.holidayEventData.term == '3' && config.holidayEventData.end && config.userData.year == '12'))) {
-			countdownLabel = 'School ends';
-			inLabel = '<sup><em>finally</em></sup>in';
-			$('#in-label,#countdown-label,#period-label').addClass('toggleable');
+		var y12End = (config.holidayEventData.term == '3' && config.holidayEventData.end && config.userData.year == '12');
+		if ((moment().add(1, 'd').isAfter(termEnd) && moment().isBefore(termEnd)) || y12End) {
 			hookToggleable();
-			cachedCountdownEvent = termEnd;
-			return termEnd;
+			$('#in-label,#countdown-label,#period-label').addClass('toggleable');
+			if (countdownToTheEnd) {
+				countdownLabel = 'School ends';
+				inLabel = '<sup><em>' + (y12End ? 'forever' : 'finally') + '</em></sup>in';
+				cachedCountdownEvent = termEnd;
+				return termEnd;
+			}
 		}
 		if (moment().isAfter(termEnd)) {
 			console.log("end: ", config.nextHolidayEvent, moment(termEnd).toString(), "now: ", moment().toString());
