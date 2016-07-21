@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
-def concat_js(dir,out='static/belltimes.concat.js'):
+def concat_js(dir,out='server/static/belltimes.concat.js'):
     out = open(out, mode='w')
     for i in sorted(os.listdir(dir)):
         i = os.path.join(dir, i)
