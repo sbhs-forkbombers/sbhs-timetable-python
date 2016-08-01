@@ -50,6 +50,7 @@ window.EventBus = {};
 
 moment.fn.fromNowCountdown = function(isCool, showDays) {
 	var diff = Math.abs(moment().diff(this, 's'));
+	var days = 0;
 	var seconds = (diff % 60) + '';
 	diff = Math.floor(diff/60);
 	var minutes = (diff % 60) + '';
@@ -64,10 +65,10 @@ moment.fn.fromNowCountdown = function(isCool, showDays) {
 		var hours = (diff % 24) + '';
 		if (hours.length < 2) hours = '0' + hours;
 		diff = Math.floor(diff / 24);
-		var days = diff;
+		days = diff;
 		diff = hours;
 	}
-	if (diff > 0) {
+	if (diff > 0 || days > 0) {
 		if (isCool) return diff +':' + minutes + ':' + seconds;
 		return (showDays ? days + 'd ' : '') + diff + 'h ' + minutes + 'm ' + seconds + 's';
 	}
